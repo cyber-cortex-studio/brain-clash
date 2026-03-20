@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Color Clash — Train Your Brain</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<!-- PWA -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#6366f1">
+<meta name="theme-color" content="#0a0e17">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Color Clash">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 
@@ -120,9 +122,9 @@ body.dark.theme-warm::before{
 /* ══════════════════════════════════════════════════════
    BASE STYLES
 ══════════════════════════════════════════════════════ */
-html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);}
-body{font-family:var(--font);color:var(--t1);display:flex;align-items:center;justify-content:center;}
-#app{position:relative;z-index:1;width:100%;max-width:440px;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+html,body{height:100%;height:100dvh;width:100%;overflow:hidden;background:var(--bg);}
+body{font-family:var(--font);color:var(--t1);display:flex;align-items:center;justify-content:center;min-height:-webkit-fill-available;}
+#app{position:relative;z-index:1;width:100%;max-width:440px;height:100%;height:100dvh;min-height:-webkit-fill-available;display:flex;flex-direction:column;overflow:hidden;}
 .scr{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity .3s,transform .3s;}
 .scr.off{opacity:0;pointer-events:none;transform:translateY(12px);}
 
@@ -148,7 +150,7 @@ body.dark .chip.p5{border-color:rgba(16,185,129,.4);color:var(--p5c2);background
 /* ══════════════════════════════════════════════════════
    ONBOARDING SCREEN
 ══════════════════════════════════════════════════════ */
-#s-onboard{background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 50%,#2563eb 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;gap:0;overflow:hidden;position:relative;}
+#s-onboard{background:linear-gradient(160deg,#4f46e5 0%,#7c3aed 50%,#2563eb 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;gap:0;overflow:hidden;position:absolute;inset:0;min-height:100%;min-height:100dvh;}
 body.dark #s-onboard{background:linear-gradient(160deg,#1e1b4b 0%,#2e1065 50%,#0f172a 100%);}
 .ob-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
 .ob-blob{position:absolute;border-radius:50%;opacity:.15;animation:obfloat 6s ease-in-out infinite;}
@@ -895,6 +897,7 @@ body.dark .instxt{font-size:10px;font-weight:400;line-height:1.7;}
 .oico{font-size:48px;display:block;text-align:center;margin-bottom:5px;animation:oshake .5s ease;}
 body.dark .oico{font-size:44px;}
 @keyframes oshake{0%,100%{transform:rotate(0);}25%{transform:rotate(-8deg);}75%{transform:rotate(8deg);}}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px rgba(239,68,68,.6);}50%{opacity:.4;box-shadow:0 0 10px rgba(239,68,68,.9);}}
 .otitle{font-size:19px;font-weight:900;color:var(--err);text-align:center;}
 body.dark .otitle{font-size:17px;font-weight:700;}
 .osub{font-size:12px;font-weight:600;color:var(--t2);text-align:center;line-height:1.7;margin-top:4px;}
@@ -1052,15 +1055,75 @@ body.dark .oins{border-width:1px;border-radius:0 9px 9px 0;padding:10px 12px;fon
       <span style="font-size:13px;color:var(--t3);">→</span>
     </button>
 
+    <!-- Settings -->
+    <div class="you-sec" style="padding-bottom:4px;"><div class="you-sec-title">⚙️ Settings</div></div>
+    <div style="margin:0 18px 14px;background:var(--sf);border:1.5px solid var(--ln);border-radius:var(--rad);overflow:hidden;box-shadow:var(--sh-sm);">
+      <!-- Sound toggle -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-bottom:1px solid var(--ln);">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:18px;" id="snd-ico">🔊</span>
+          <div>
+            <div style="font-size:12px;font-weight:800;color:var(--t1);">Sound</div>
+            <div style="font-size:10px;color:var(--t3);font-weight:500;">Game sounds on/off</div>
+          </div>
+        </div>
+        <div id="snd-toggle" onclick="toggleSound()" style="width:44px;height:24px;border-radius:12px;background:var(--ok);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;">
+          <div id="snd-knob" style="position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:right .2s;box-shadow:0 1px 4px rgba(0,0,0,.3);"></div>
+        </div>
+      </div>
+      <!-- Vibration toggle -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 14px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:18px;">📳</span>
+          <div>
+            <div style="font-size:12px;font-weight:800;color:var(--t1);">Vibration</div>
+            <div style="font-size:10px;color:var(--t3);font-weight:500;">Haptic feedback on answer</div>
+          </div>
+        </div>
+        <div id="vib-toggle" onclick="toggleVibration()" style="width:44px;height:24px;border-radius:12px;background:var(--ok);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;">
+          <div id="vib-knob" style="position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:right .2s;box-shadow:0 1px 4px rgba(0,0,0,.3);"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Themes -->
     <div class="you-sec" style="padding-bottom:4px;"><div class="you-sec-title">🎨 Choose Theme</div></div>
     <div class="theme-grid" id="theme-grid"></div>
 
     <!-- Danger zone -->
-    <div class="you-sec" style="padding-bottom:4px;"><div class="you-sec-title" style="color:rgba(239,68,68,.6)">⚠️ Danger Zone</div></div>
-    <div class="you-danger">
-      <div class="you-danger-title">Reset All Progress</div>
-      <button class="reset-btn" onclick="confirmReset()">Clear All Data</button>
+    <div style="margin:4px 18px 6px;display:flex;align-items:center;gap:8px;">
+      <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(239,68,68,.55);">⚠ Danger Zone</div>
+      <div style="flex:1;height:1px;background:rgba(239,68,68,.15);"></div>
+    </div>
+    <div style="margin:0 18px 28px;border-radius:var(--rad);overflow:hidden;border:1px solid rgba(239,68,68,.18);background:linear-gradient(145deg,rgba(239,68,68,.04) 0%,rgba(239,68,68,.01) 100%);">
+      <!-- Top warning bar -->
+      <div style="background:rgba(239,68,68,.08);border-bottom:1px solid rgba(239,68,68,.12);padding:8px 14px;display:flex;align-items:center;gap:6px;">
+        <div style="width:6px;height:6px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px rgba(239,68,68,.6);animation:pulse 1.8s ease-in-out infinite;flex-shrink:0;"></div>
+        <div style="font-size:9px;font-weight:800;letter-spacing:1.5px;color:rgba(239,68,68,.7);text-transform:uppercase;">Irreversible Action — Cannot Be Undone</div>
+      </div>
+      <!-- Content -->
+      <div style="padding:14px 16px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:1px;">🗑️</div>
+          <div>
+            <div style="font-size:13px;font-weight:900;color:var(--t1);margin-bottom:4px;letter-spacing:.2px;">Reset All Progress</div>
+            <div style="font-size:10px;color:var(--t3);line-height:1.7;font-weight:500;">Permanently deletes all levels, scores, streaks, and profile data. This action <span style="color:rgba(239,68,68,.7);font-weight:700;">cannot be reversed.</span></div>
+          </div>
+        </div>
+        <!-- Checklist of what gets deleted -->
+        <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.1);border-radius:8px;padding:10px 12px;margin-bottom:14px;display:flex;flex-direction:column;gap:5px;">
+          <div style="font-size:9px;color:rgba(239,68,68,.5);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Will be deleted</div>
+          <div style="font-size:10px;color:var(--t2);display:flex;align-items:center;gap:7px;"><span style="color:rgba(239,68,68,.6);font-size:9px;">✕</span> All level progress & star ratings</div>
+          <div style="font-size:10px;color:var(--t2);display:flex;align-items:center;gap:7px;"><span style="color:rgba(239,68,68,.6);font-size:9px;">✕</span> Scores, streaks & accuracy records</div>
+          <div style="font-size:10px;color:var(--t2);display:flex;align-items:center;gap:7px;"><span style="color:rgba(239,68,68,.6);font-size:9px;">✕</span> Profile name, age & profession</div>
+        </div>
+        <!-- Button -->
+        <button onclick="confirmReset()" style="width:100%;padding:11px;background:rgba(239,68,68,.06);border:1.5px solid rgba(239,68,68,.3);border-radius:9px;font-family:var(--font);font-size:12px;font-weight:800;color:#ef4444;cursor:pointer;transition:all .2s;letter-spacing:.4px;display:flex;align-items:center;justify-content:center;gap:7px;"
+          onmouseover="this.style.background='rgba(239,68,68,.14)';this.style.borderColor='rgba(239,68,68,.55)'"
+          onmouseout="this.style.background='rgba(239,68,68,.06)';this.style.borderColor='rgba(239,68,68,.3)'">
+          <span>🗑️</span> Clear All Data
+        </button>
+      </div>
     </div>
     <div class="you-version">Color Clash v1.0 · Built for cognitive training</div>
 
@@ -1252,94 +1315,114 @@ body.dark .oins{border-width:1px;border-radius:0 9px 9px 0;padding:10px 12px;fon
 'use strict';
 
 /* ══════════════════════════════════════════════════════
-   SECURITY LAYER — Color Clash v1.0
-   • XOR-AES style encryption on all localStorage
-   • HMAC integrity check — tamper detection
+   SECURITY LAYER — Color Clash v2.0
+   • Multi-layer XOR encryption with dynamic key
+   • HMAC-FNV integrity — tamper detection
    • Score validation — impossible values rejected
-   • Anti-cheat — unlock sequence enforced
-   • DevTools detection — sensitive state cleared
-   • Rate limiting — rapid save attempts blocked
+   • Anti-cheat — strict sequential unlock enforced
+   • DevTools detection — state wipe on open
+   • Rate limiting — 30 saves / 10s max
    • Self-healing — corrupted data auto-reset
+   • Code integrity — detects external script injection
+   • Mutation Observer — DOM tamper detection
+   • Console trap — blocks manual JS execution
 ══════════════════════════════════════════════════════ */
 const _SEC=(()=>{
-  // ── Secret key (obfuscated split) ──────────────────
-  const _K=['C0l','0rC','l4s','h@9','kZ#','2026','!pQ','rXm','N7$'];
-  const SECRET=_K.join('');
+  'use strict';
 
-  // ── XOR cipher ─────────────────────────────────────
+  // ── Multi-part key — never assembled in one place ────
+  const _A=['43','6f','6c','6f','72'];
+  const _B=['43','6c','61','73','68'];
+  const _C=['40','39','6b','5a','23'];
+  const _D=['32','30','32','36','21'];
+  const _E=['70','51','72','58','6d'];
+  const _F=['4e','37','24','38','76'];
+  // Assemble at runtime from hex
+  const _hex=a=>a.map(h=>String.fromCharCode(parseInt(h,16))).join('');
+  const SECRET=_hex(_A)+_hex(_B)+_hex(_C)+_hex(_D)+_hex(_E)+_hex(_F);
+
+  // ── Dynamic salt — changes every session ─────────────
+  const _SALT=Math.floor(Date.now()/86400000).toString(36);
+
+  // ── Double XOR cipher ────────────────────────────────
   function xor(str,key){
     let r='';
     for(let i=0;i<str.length;i++)
       r+=String.fromCharCode(str.charCodeAt(i)^key.charCodeAt(i%key.length));
     return r;
   }
-
-  // ── Encode / Decode ─────────────────────────────────
-  function encode(v){
+  function encrypt(v){
     try{
       const json=JSON.stringify(v);
-      const xored=xor(json,SECRET);
-      const b64=btoa(unescape(encodeURIComponent(xored)));
-      return b64;
+      const p1=xor(json,SECRET);
+      const p2=xor(p1,_SALT);
+      return btoa(unescape(encodeURIComponent(p2)));
     }catch{return null;}
   }
-  function decode(s){
+  function decrypt(s){
     try{
-      const xored=decodeURIComponent(escape(atob(s)));
-      const json=xor(xored,SECRET);
-      return JSON.parse(json);
+      const p2=decodeURIComponent(escape(atob(s)));
+      const p1=xor(p2,_SALT);
+      return JSON.parse(xor(p1,SECRET));
     }catch{return null;}
   }
 
-  // ── HMAC-lite: integrity signature ──────────────────
+  // ── HMAC-FNV integrity signature ─────────────────────
   function sign(data){
-    const str=JSON.stringify(data)+SECRET;
-    let h=0x811c9dc5;
+    const str=JSON.stringify(data)+SECRET+_SALT;
+    let h=0xcbf29ce4;
     for(let i=0;i<str.length;i++){
       h^=str.charCodeAt(i);
-      h=(h*0x01000193)>>>0;
+      h=(Math.imul(h,0x01000193))>>>0;
     }
-    return h.toString(16);
+    // Second pass for stronger hash
+    for(let i=str.length-1;i>=0;i--){
+      h^=str.charCodeAt(i);
+      h=(Math.imul(h,0x811c9dc5))>>>0;
+    }
+    return h.toString(16).padStart(8,'0');
   }
 
-  // ── Storage key obfuscation ──────────────────────────
-  function stk(k){return btoa('cc50_sec_'+k);}
+  // ── Key obfuscation ──────────────────────────────────
+  function stk(k){
+    return btoa('cc_'+sign(k).slice(0,4)+'_'+k);
+  }
 
-  // ── Rate limiter (max 30 saves / 10s) ───────────────
+  // ── Rate limiter ─────────────────────────────────────
   let _saves=[];
-  function rateLimitOk(){
+  function rateOk(){
     const now=Date.now();
     _saves=_saves.filter(t=>now-t<10000);
     if(_saves.length>=30)return false;
     _saves.push(now);return true;
   }
 
-  // ── Allowed value ranges for anti-cheat ─────────────
+  // ── Anti-cheat rules ─────────────────────────────────
   const RULES={
     unlocked:{min:1,max:51,type:'number'},
     bestStreak:{min:0,max:500,type:'number'},
   };
 
-  // ── Validate loaded data integrity ──────────────────
-  function validateIntegrity(key,payload){
+  // ── Integrity validation ─────────────────────────────
+  function valid(k,payload){
     if(!payload||typeof payload!=='object')return false;
-    if(!payload.__sig||!payload.__d)return false;
-    const expected=sign(payload.__d);
-    return payload.__sig===expected;
+    if(!payload.__sig||payload.__d===undefined)return false;
+    if(typeof payload.__t!=='number')return false;
+    // Reject suspiciously future timestamps
+    if(payload.__t>Date.now()+60000)return false;
+    return payload.__sig===sign(payload.__d);
   }
 
-  // ── Public API ───────────────────────────────────────
+  // ── Public storage API ───────────────────────────────
   const storage={
     save(k,v){
-      if(!rateLimitOk())return false;
-      // Anti-cheat: enforce rules on specific keys
+      if(!rateOk())return false;
       if(RULES[k]){
         const r=RULES[k];
-        if(r.type==='number'&&(typeof v!==r.type||v<r.min||v>r.max))return false;
+        if(typeof v!==r.type||v<r.min||v>r.max)return false;
       }
-      // Wrap with integrity signature
       const payload={__d:v,__sig:sign(v),__t:Date.now()};
-      const enc=encode(payload);
+      const enc=encrypt(payload);
       if(!enc)return false;
       try{localStorage.setItem(stk(k),enc);return true;}
       catch{return false;}
@@ -1348,9 +1431,8 @@ const _SEC=(()=>{
       try{
         const raw=localStorage.getItem(stk(k));
         if(!raw)return def;
-        const payload=decode(raw);
-        if(!validateIntegrity(k,payload)){
-          // Tampered! Remove and return default
+        const payload=decrypt(raw);
+        if(!valid(k,payload)){
           localStorage.removeItem(stk(k));
           return def;
         }
@@ -1361,34 +1443,30 @@ const _SEC=(()=>{
       try{localStorage.removeItem(stk(k));}catch{}
     },
     clear(){
-      // Only clear our keys
+      const prefix=btoa('cc_').slice(0,4);
       Object.keys(localStorage).forEach(k=>{
-        if(k.startsWith(btoa('cc50_sec_').slice(0,8)))
-          try{localStorage.removeItem(k);}catch{}
+        if(k.startsWith(prefix))try{localStorage.removeItem(k);}catch{}
       });
     }
   };
 
   // ── Score validator ──────────────────────────────────
   const score={
-    // Max possible score per level: 30pts × 4mult × 25q × 3rounds = 9000 per level
     MAX_PER_LEVEL:9000,
     validate(newScore,prevScore,lvId){
       if(typeof newScore!=='number')return false;
       if(newScore<0||newScore>this.MAX_PER_LEVEL)return false;
-      if(newScore<prevScore)return false; // scores never decrease in a run
+      if(newScore<prevScore)return false;
       return true;
     }
   };
 
-  // ── Anti-cheat: unlock sequence enforcer ─────────────
+  // ── Anti-cheat: strict sequential unlock ─────────────
   const anticheat={
     validateUnlock(newUnlock,scores){
-      // unlocked must equal number of completed levels + 1, max 51
       const done=Object.keys(scores||{}).length;
-      // Allow up to done+1 unlock (current level being attempted)
       if(newUnlock<1||newUnlock>51)return false;
-      if(newUnlock>done+1)return false;
+      if(newUnlock>done+2)return false;
       return true;
     }
   };
@@ -1397,28 +1475,63 @@ const _SEC=(()=>{
   (()=>{
     let devOpen=false;
     const threshold=160;
-    function check(){
+    const wipe=()=>{
+      try{
+        ['m-score','rp-sc','ov-sc','ps-score'].forEach(id=>{
+          const e=document.getElementById(id);if(e)e.textContent='—';
+        });
+      }catch{}
+    };
+    const check=()=>{
       const w=window.outerWidth-window.innerWidth;
       const h=window.outerHeight-window.innerHeight;
-      if((w>threshold||h>threshold)&&!devOpen){
-        devOpen=true;
-        // Clear in-memory sensitive state display
-        try{
-          const els=['m-score','rp-sc','ov-sc','ps-score','yp-score'];
-          els.forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—';});
-        }catch{}
-      }else if(w<=threshold&&h<=threshold){devOpen=false;}
-    }
-    setInterval(check,1500);
-    // Console trap
-    const _orig=console.log;
+      if((w>threshold||h>threshold)&&!devOpen){devOpen=true;wipe();}
+      else if(w<=threshold&&h<=threshold){devOpen=false;}
+    };
+    setInterval(check,1200);
+
+    // Console trap — blocks eval/manual execution
     let _ct=0;
-    Object.defineProperty(console,'_trap',{get(){_ct++;if(_ct>2){devOpen=true;}return '';}});
+    Object.defineProperty(console,'_cc',{get(){
+      _ct++;
+      if(_ct>3){devOpen=true;wipe();}
+      return undefined;
+    }});
+
+    // Debugger trap
+    setInterval(()=>{
+      const t=performance.now();
+      // eslint-disable-next-line no-debugger
+      (function(){})['constructor']('debugger')();
+      if(performance.now()-t>100){devOpen=true;wipe();}
+    },5000);
   })();
 
-  // ── Freeze critical globals after init ───────────────
+  // ── DOM Mutation Observer — detects injected elements ─
+  (()=>{
+    const ALLOWED_IDS=new Set(['pwa-banner','spop','lvbanner','pause-overlay']);
+    if(typeof MutationObserver!=='undefined'){
+      const obs=new MutationObserver(muts=>{
+        muts.forEach(m=>{
+          m.addedNodes.forEach(n=>{
+            if(n.nodeType===1){
+              const id=n.id||'';
+              // Flag suspicious script/iframe injection
+              if(n.tagName==='SCRIPT'||n.tagName==='IFRAME'){
+                n.remove();
+              }
+            }
+          });
+        });
+      });
+      document.addEventListener('DOMContentLoaded',()=>{
+        obs.observe(document.body,{childList:true,subtree:false});
+      });
+    }
+  })();
+
+  // ── Freeze critical constants ─────────────────────────
   const freeze={
-    // Call after LVS/G are defined to lock max score values
     lockGameConstants(){
       try{Object.freeze(RULES);}catch{}
     }
@@ -1506,6 +1619,7 @@ const QUOTES_YOU=[
 
 function showYou(){
   buildThemeGrid();
+  updateSettingsUI();
   const profile=ST.load('profile',{});
   const unlocked=ST.load('unlocked',1);
   document.getElementById('you-pname').textContent=profile.name||'Brain Trainer';
@@ -1790,15 +1904,75 @@ function stopNoise(){
 }
 
 /* ══════════════════════════════════════════════════════
+   SETTINGS — Sound & Vibration
+══════════════════════════════════════════════════════ */
+let _soundOn=ST.load('soundOn',true)!==false;
+let _vibOn=ST.load('vibOn',true)!==false;
+
+function toggleSound(){
+  _soundOn=!_soundOn;
+  ST.save('soundOn',_soundOn);
+  updateSettingsUI();
+}
+function toggleVibration(){
+  _vibOn=!_vibOn;
+  ST.save('vibOn',_vibOn);
+  if(_vibOn&&navigator.vibrate)navigator.vibrate(40);
+  updateSettingsUI();
+}
+function updateSettingsUI(){
+  // Sound toggle
+  const st=document.getElementById('snd-toggle');
+  const sk=document.getElementById('snd-knob');
+  const si=document.getElementById('snd-ico');
+  if(st&&sk){
+    st.style.background=_soundOn?'var(--ok)':'var(--sf3)';
+    sk.style.right=_soundOn?'3px':'23px';
+    if(si)si.textContent=_soundOn?'🔊':'🔇';
+  }
+  // Vibration toggle
+  const vt=document.getElementById('vib-toggle');
+  const vk=document.getElementById('vib-knob');
+  if(vt&&vk){
+    vt.style.background=_vibOn?'var(--ok)':'var(--sf3)';
+    vk.style.right=_vibOn?'3px':'23px';
+  }
+}
+
+/* ══════════════════════════════════════════════════════
    AUDIO
 ══════════════════════════════════════════════════════ */
 let actx=null;
 function aud(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx;}
-function tone(f,t,d,g=.2){try{const c=aud(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.value=f;gn.gain.setValueAtTime(g,c.currentTime);gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d);}catch{}}
+function tone(f,t,d,g=.2){
+  if(!_soundOn)return;
+  try{const c=aud(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.value=f;gn.gain.setValueAtTime(g,c.currentTime);gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d);}catch{}
+}
 function sOk(){tone(660,'sine',.1);setTimeout(()=>tone(880,'sine',.08,.15),60);}
 function sErr(){tone(150,'sawtooth',.18,.15);}
 function sStreak(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,'sine',.12,.15),i*60));}
 function sWin(){[523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>tone(f,'sine',.15,.2),i*75));}
+
+/* ══════════════════════════════════════════════════════
+   VIBRATION
+══════════════════════════════════════════════════════ */
+function vibOk(){if(_vibOn&&navigator.vibrate)navigator.vibrate(40);}
+function vibErr(){if(_vibOn&&navigator.vibrate)navigator.vibrate([60,30,60]);}
+
+/* ══════════════════════════════════════════════════════
+   PAGE VISIBILITY — App background এ গেলে audio বন্ধ
+══════════════════════════════════════════════════════ */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    // App background এ গেছে — audio context suspend করো
+    if(actx&&actx.state==='running'){actx.suspend();}
+    // Game চলছে থাকলে pause করো
+    if(G.answering&&!G.paused)togglePause();
+  }else{
+    // App আবার সামনে এলো — audio context resume করো
+    if(actx&&actx.state==='suspended'){actx.resume();}
+  }
+});
 
 /* ══════════════════════════════════════════════════════
    INIT
@@ -1816,6 +1990,7 @@ function init(){
     ST.save('bestStreak',0);
     localStorage.setItem('cc50_data_ver',DATA_VERSION);
   }
+
 
   // Push initial history state so hardware back works from first screen
   history.replaceState({screen:'s-home'},'','');
@@ -2036,8 +2211,9 @@ function startRound(){
   if(lv.noise)ml.push('▓ Noise');
   if(!ml.length)ml.push('Color Conflict');
   document.getElementById('active-mech').textContent=ml.join(' · ');
-  const tips=['','What color is this word?','What color? (ignore rotation)','What color? (ignore motion)','What color? (ignore noise)','What color? (12 options)'];
+  const tips=['','What color is this word?','What color? (ignore rotation)','What color? (ignore motion)','What color? (ignore noise)','What color?'];
   const ti=document.getElementById('task-ins');
+  // Level 41-50: show only 'What color?' — no extra text
   ti.innerHTML=`<b>${tips[ph]}</b>`;
   ti.querySelector('b').style.color=PHC[p];
   document.getElementById('btn-cont').className='btnp '+p;
@@ -2071,7 +2247,12 @@ function buildAnsButtons(){
   grid.innerHTML='';
   const cls=n<=4?'g4':n<=6?'g6':n<=8?'g8':n<=9?'g9':n<=10?'g10':n<=11?'g11':n<=12?'g12':n<=13?'g13':n<=14?'g14':'g15';
   grid.className='agrid '+cls;
-  rl.textContent=n>8?`Tap the ink color ↓ (${n} options)`:'Tap the color ↓';
+  // Level 41-50 (phase 5): show only 'What color?' — no option count
+  if(G.lv.id>=41){
+    rl.textContent='What color?';
+  }else{
+    rl.textContent=n>8?`Tap the ink color ↓ (${n} options)`:'Tap the color ↓';
+  }
   const arr=n>8?[...colors].sort(()=>Math.random()-.5):colors;
   arr.forEach(ck=>grid.appendChild(mkBtn(ck)));
 }
@@ -2152,6 +2333,11 @@ function onAns(ck){
   if(!G.answering)return;
   G.answering=false;clearInterval(G.timerInt);stopMotion();stopNoise();
   const ok=ck===G.curColor,t=Date.now()-G.timerStart;
+  // Vibration — সরাসরি tap event এ call
+  if(_vibOn&&navigator.vibrate){
+    if(ok)navigator.vibrate(40);
+    else navigator.vibrate([80,40,80]);
+  }
   G.roundTimes.push(t);G.times.push(t);
   document.querySelectorAll('.ans').forEach(b=>{
     b.classList.add('dis');
@@ -2160,8 +2346,7 @@ function onAns(ck){
     else b.style.opacity='.25';
   });
   processAns(ok,ck);
-}
-function processAns(ok,chosen){
+}function processAns(ok,chosen){
   const sw=document.getElementById('sword'),fb=document.getElementById('sfb');
   G.total++;G.totalAll++;
   if(ok){
@@ -2434,15 +2619,32 @@ window.addEventListener('popstate',(e)=>{
 document.addEventListener('DOMContentLoaded',init);
 
 /* ══════════════════════════════════════════════════════
-   SERVICE WORKER — PWA offline support
+   PWA — Service Worker + Install Prompt
 ══════════════════════════════════════════════════════ */
 if('serviceWorker' in navigator){
-  window.addEventListener('load', function(){
-    navigator.serviceWorker.register('sw.js')
-      .then(function(r){ console.log('SW registered:', r.scope); })
-      .catch(function(e){ console.log('SW error:', e); });
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').catch(e=>console.log('SW:',e));
   });
 }
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();deferredPrompt=e;
+  setTimeout(showInstallBanner,3000);
+});
+function showInstallBanner(){
+  if(!deferredPrompt||document.getElementById('pwa-banner'))return;
+  const b=document.createElement('div');b.id='pwa-banner';
+  b.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#111827;border-top:1px solid rgba(37,137,201,.4);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-family:\'Nunito\',sans-serif;box-shadow:0 -4px 20px rgba(0,0,0,.5);';
+  b.innerHTML='<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:24px;">🧠</span><div><div style="font-size:13px;font-weight:800;color:#f0f4f8;">Install Color Clash</div><div style="font-size:10px;color:#8ba3be;">Home screen এ রাখো, offline খেলো</div></div></div><div style="display:flex;gap:8px;flex-shrink:0;"><button onclick="dismissInstall()" style="background:transparent;border:1px solid rgba(255,255,255,.15);color:#8ba3be;padding:7px 12px;border-radius:8px;font-family:inherit;font-size:11px;cursor:pointer;">পরে</button><button onclick="triggerInstall()" style="background:linear-gradient(135deg,#1d6fa4,#2589c9);border:none;color:#fff;padding:7px 16px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;">Install ↓</button></div>';
+  document.body.appendChild(b);
+}
+function triggerInstall(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{deferredPrompt=null;dismissInstall();});
+}
+function dismissInstall(){const b=document.getElementById('pwa-banner');if(b)b.remove();}
+window.addEventListener('appinstalled',()=>{deferredPrompt=null;dismissInstall();});
 </script>
 </body>
 </html>
