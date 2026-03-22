@@ -3,7 +3,7 @@
    Offline-first caching strategy
 ══════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'color-clash-v2';
+const CACHE_NAME = 'color-clash-v3';
 
 const ASSETS_TO_CACHE = [
   './',
