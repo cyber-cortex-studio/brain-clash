@@ -245,20 +245,6 @@ body.dark .hero-tagline{font-size:9px;font-weight:600;letter-spacing:.4px;}
 ══════════════════════════════════════════════════════ */
 .you-edit-form{margin:0 18px 12px;background:var(--sf);border:1.5px solid var(--ln);border-radius:var(--rad);padding:14px;box-shadow:var(--sh-sm);}
 body.dark .you-edit-form{border-width:1px;border-radius:9px;padding:12px;box-shadow:none;}
-.you-edit-field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
-.you-edit-field:last-of-type{margin-bottom:0;}
-.you-edit-label{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--t3);}
-body.dark .you-edit-label{font-size:8px;font-weight:400;letter-spacing:1.5px;}
-.you-edit-input{width:100%;padding:9px 12px;border:1.5px solid var(--ln2);border-radius:var(--rad-sm);font-family:var(--font);font-size:13px;font-weight:700;color:var(--t1);background:var(--sf2);outline:none;transition:all .18s;}
-body.dark .you-edit-input{border-width:1px;border-radius:6px;padding:8px 10px;font-size:11px;font-weight:500;background:rgba(255,255,255,.04);}
-.you-edit-input:focus{border-color:var(--accent);background:var(--sf);box-shadow:0 0 0 3px var(--accent-glow);}
-body.dark .you-edit-input:focus{background:rgba(255,255,255,.07);}
-.you-edit-save{margin-top:12px;width:100%;padding:10px;border:none;border-radius:var(--rad-pill);font-family:var(--font);font-size:12px;font-weight:900;letter-spacing:.5px;cursor:pointer;background:linear-gradient(135deg,var(--p5c),var(--p5c2));color:#111;transition:all .18s;box-shadow:0 4px 14px var(--p5g);}
-body.dark .you-edit-save{border-radius:7px;padding:9px;font-size:10px;font-weight:700;}
-.you-edit-save:hover{transform:translateY(-1px);filter:brightness(1.06);}
-.you-edit-saved{font-size:10px;color:var(--ok);text-align:center;margin-top:6px;min-height:14px;font-weight:700;transition:opacity .3s;}
-body.dark .you-edit-saved{font-size:9px;font-weight:400;}
-
 /* ══════════════════════════════════════════════════════
    HOME SCREEN BASE
 ══════════════════════════════════════════════════════ */
@@ -1889,11 +1875,13 @@ function showProg(){
 function backFromProg(){
   buildGrids();
   showScr('s-home');
+  initDemo();
 }
 
 function backFromYou(){
   buildGrids();
   showScr('s-home');
+  initDemo();
 }
 
 function confirmReset(){
@@ -2065,7 +2053,7 @@ function stopNoise(){
 /* ══════════════════════════════════════════════════════
    SETTINGS — Sound & Vibration
 ══════════════════════════════════════════════════════ */
-let _soundOn=ST.load('soundOn',true)===true||ST.load('soundOn',true)===undefined||ST.load('soundOn',true)===null;
+let _soundOn=ST.load('soundOn',true)!==false;
 let _vibOn=ST.load('vibOn',true)!==false;
 
 function toggleSound(){
@@ -2870,6 +2858,7 @@ function goHome(){
   _HIST.length=0;
   _HIST.push('s-home');
   history.pushState({screen:'s-home'},'','');
+  initDemo();
 }
 
 /* ══════════════════════════════════════════════════════

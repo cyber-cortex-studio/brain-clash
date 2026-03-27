@@ -2,7 +2,6 @@
    Color Clash — Service Worker v1
    Cache-first: works 100% offline after first load
 ═══════════════════════════════════════════════════════ */
-
 const CACHE = 'color-clash-v1';
 const ASSETS = [
   './',
@@ -12,15 +11,11 @@ const ASSETS = [
   './icon-512.png'
 ];
 
-/* Install — cache everything */
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS))
-  );
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
-/* Activate — delete old caches */
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -30,7 +25,6 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-/* Fetch — cache first, then network */
 self.addEventListener('fetch', e => {
   if (!e.request.url.startsWith(self.location.origin)) return;
   e.respondWith(
