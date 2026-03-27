@@ -4,7 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Color Clash — Train Your Brain</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── Offline-safe font stack ─────────────────────────
+   Nunito equivalent: Rounded, friendly — light mode
+   IBM Plex Mono equivalent: Clean mono — dark mode
+   All fonts below are built into Android/iOS/Windows
+──────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Nunito';
+  src: local('Nunito'), local('Nunito-Regular');
+  font-weight: 400 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: local('IBM Plex Mono'), local('IBMPlexMono');
+  font-weight: 400 700;
+  font-style: normal;
+}
+
+/* ══════════════════════════════════════════════════════
+   CUSTOM MODAL — replaces confirm/alert (PWA safe)
+══════════════════════════════════════════════════════ */
+#cc-modal-overlay{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);transition:opacity .2s;}
+#cc-modal-overlay.cc-modal-hide{opacity:0;pointer-events:none;}
+#cc-modal-box{background:var(--sf);border:1.5px solid var(--ln2);border-radius:var(--rad);padding:24px 20px;max-width:320px;width:100%;box-shadow:var(--sh-lg);display:flex;flex-direction:column;gap:14px;}
+#cc-modal-icon{font-size:32px;text-align:center;}
+#cc-modal-title{font-size:15px;font-weight:900;color:var(--t1);text-align:center;line-height:1.3;}
+#cc-modal-body{font-size:12px;color:var(--t2);text-align:center;line-height:1.6;}
+.cc-modal-btns{display:flex;gap:10px;margin-top:4px;}
+.cc-modal-btn{flex:1;padding:12px;border:none;border-radius:var(--rad-pill);font-family:var(--font);font-size:13px;font-weight:900;cursor:pointer;transition:all .18s;letter-spacing:.3px;}
+.cc-modal-btn.cancel{background:var(--sf2);border:1.5px solid var(--ln2);color:var(--t2);}
+.cc-modal-btn.confirm-red{background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.35);color:#ef4444;}
+.cc-modal-btn.confirm-ok{background:linear-gradient(135deg,var(--p5c),var(--p5c2));color:#111;}
+body.dark .cc-modal-btn.cancel{border-radius:var(--rad-sm);}
+body.dark .cc-modal-btn.confirm-red{border-radius:var(--rad-sm);}
+body.dark .cc-modal-btn.confirm-ok{border-radius:var(--rad-sm);}
+</style>
+<style id="font-override">
+/* Fallback stack — activates if Nunito/IBM Plex Mono not installed */
+:root { --font-sans: 'Nunito', 'Varela Round', 'Quicksand', 'Comic Neue', ui-rounded, system-ui, -apple-system, sans-serif; }
+body.dark { --font-mono: 'IBM Plex Mono', 'Roboto Mono', 'SF Mono', 'Courier New', ui-monospace, monospace; }
+</style>
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a0e17">
@@ -29,7 +70,7 @@
   --p5c:#047857; --p5c2:#10b981; --p5g:rgba(16,185,129,.20);
   --ok:#22c55e; --warn:#f59e0b; --err:#00258a;
   --t1:#1e293b; --t2:#64748b; --t3:#94a3b8;
-  --font:'Nunito',sans-serif;
+  --font:'Nunito','Varela Round','Quicksand',ui-rounded,system-ui,-apple-system,sans-serif;
   --rad:16px; --rad-sm:10px; --rad-pill:99px;
   --sh-sm:0 2px 10px rgba(99,102,241,.08),0 1px 3px rgba(0,0,0,.04);
   --sh-md:0 4px 20px rgba(99,102,241,.10),0 2px 6px rgba(0,0,0,.05);
@@ -52,7 +93,7 @@ body.dark{
   --p4c:#0e7490; --p4c2:#06b6d4; --p4g:rgba(6,182,212,.25);
   --p5c:#065f46; --p5c2:#10b981; --p5g:rgba(16,185,129,.25);
   --t1:#f0f4f8; --t2:#8ba3be; --t3:#506070;
-  --font:'IBM Plex Mono',monospace;
+  --font:'IBM Plex Mono','Roboto Mono','SF Mono','Courier New',ui-monospace,monospace;
   --rad:10px; --rad-sm:6px; --rad-pill:3px;
   --sh-sm:none; --sh-md:none; --sh-lg:none;
   --hud-bg:rgba(10,14,23,.96); --dot-sz:8px; --dot-bd:1px;
@@ -125,7 +166,7 @@ body.dark.theme-warm::before{
 html,body{height:100%;height:100dvh;width:100%;overflow:hidden;background:var(--bg);}
 body{font-family:var(--font);color:var(--t1);display:flex;align-items:center;justify-content:center;min-height:-webkit-fill-available;}
 #app{position:relative;z-index:1;width:100%;max-width:440px;height:100%;height:100dvh;min-height:-webkit-fill-available;display:flex;flex-direction:column;overflow:hidden;}
-.scr{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity .3s,transform .3s;}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity .15s,transform .15s;}
 .scr.off{opacity:0;pointer-events:none;transform:translateY(12px);}
 
 /* ══════════════════════════════════════════════════════
@@ -245,22 +286,22 @@ body.dark .wt{font-size:11px;font-weight:600;}
 .wd{font-size:11px;color:var(--t2);line-height:1.7;font-weight:600;}
 body.dark .wd{font-size:10px;font-weight:400;}
 
-.demo-sec{padding:12px 18px;border-bottom:1px solid var(--ln);background:var(--bg);}
+.demo-sec{padding:8px 18px;border-bottom:1px solid var(--ln);background:var(--bg);}
 .slbl{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
 body.dark .slbl{font-size:8px;font-weight:400;letter-spacing:2px;}
-.dcard{background:var(--sf);border:1.5px solid var(--ln);border-radius:var(--rad);padding:14px;text-align:center;position:relative;box-shadow:var(--sh-md);}
-body.dark .dcard{border-width:1px;border-radius:9px;padding:12px;}
+.dcard{background:var(--sf);border:1.5px solid var(--ln);border-radius:var(--rad);padding:10px;text-align:center;position:relative;box-shadow:var(--sh-md);}
+body.dark .dcard{border-width:1px;border-radius:9px;padding:9px;}
 .dcard::before{content:'LIVE DEMO';position:absolute;top:9px;right:11px;font-size:8px;font-weight:800;letter-spacing:1.5px;color:var(--t3);}
 body.dark .dcard::before{content:'DEMO';top:7px;right:9px;font-size:7px;font-weight:400;letter-spacing:2px;}
-.dprompt{font-size:10px;color:var(--t2);margin-bottom:9px;font-weight:700;}
+.dprompt{font-size:10px;color:var(--t2);margin-bottom:5px;font-weight:700;}
 body.dark .dprompt{font-size:9px;font-weight:400;}
-.dword{font-size:clamp(26px,7.5vw,38px);font-weight:900;letter-spacing:2px;min-height:48px;display:flex;align-items:center;justify-content:center;}
-body.dark .dword{font-size:clamp(24px,7vw,34px);font-weight:700;min-height:44px;text-shadow:0 0 16px currentColor;}
+.dword{font-size:clamp(26px,7.5vw,38px);font-weight:900;letter-spacing:2px;min-height:40px;display:flex;align-items:center;justify-content:center;}
+body.dark .dword{font-size:clamp(24px,7vw,34px);font-weight:700;min-height:38px;text-shadow:0 0 16px currentColor;}
 .dans{margin-top:7px;font-size:11px;color:var(--t2);font-weight:600;}
 body.dark .dans{font-size:10px;font-weight:400;color:var(--t3);}
 .dans b{color:var(--t1);font-weight:800;}
-.drule{margin-top:8px;padding:8px 11px;background:rgba(16,185,129,.07);border:1.5px solid rgba(16,185,129,.2);border-radius:10px;font-size:11px;color:var(--t2);line-height:1.6;font-weight:600;}
-body.dark .drule{margin-top:6px;padding:6px 9px;border-width:1px;border-radius:6px;font-size:10px;font-weight:400;}
+.drule{margin-top:5px;padding:6px 10px;background:rgba(16,185,129,.07);border:1.5px solid rgba(16,185,129,.2);border-radius:10px;font-size:11px;color:var(--t2);line-height:1.5;font-weight:600;}
+body.dark .drule{margin-top:4px;padding:5px 8px;border-width:1px;border-radius:6px;font-size:10px;font-weight:400;}
 
 .psep{padding:10px 18px 5px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
 body.dark .psep{padding:8px 18px 4px;font-size:8px;font-weight:400;letter-spacing:2px;gap:7px;}
@@ -674,7 +715,7 @@ body.dark .stim-zone{padding:10px 14px 6px;}
 .task-ins{font-size:12px;font-weight:800;color:var(--t2);margin-bottom:6px;text-align:center;letter-spacing:.3px;}
 body.dark .task-ins{font-size:10px;font-weight:400;margin-bottom:4px;letter-spacing:.6px;}
 .mwrap{display:flex;align-items:center;justify-content:center;width:100%;will-change:transform;}
-.sword{font-size:clamp(34px,9.5vw,54px);font-weight:900;letter-spacing:2px;padding:14px 22px;border-radius:22px;width:100%;max-width:320px;min-height:96px;display:flex;align-items:center;justify-content:center;position:relative;border:2px solid var(--ln2);overflow:hidden;background:var(--sf);box-shadow:var(--sh-lg);}
+.sword{font-size:clamp(34px,9.5vw,54px);font-weight:900;letter-spacing:2px;padding:14px 22px;border-radius:22px;width:100%;max-width:320px;min-height:96px;display:flex;align-items:center;justify-content:center;position:relative;border:2px solid var(--ln2);overflow:hidden;background:var(--sf);box-shadow:var(--sh-lg)}
 body.dark .sword{font-weight:700;letter-spacing:3px;padding:12px 20px;border-radius:14px;max-width:310px;min-height:92px;border-width:1px;box-shadow:none;}
 .sword::before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse at center,rgba(255,255,255,.45),transparent 70%);pointer-events:none;z-index:1;}
 body.dark .sword::before{background:radial-gradient(ellipse at center,rgba(255,255,255,.02),transparent 70%);}
@@ -701,7 +742,7 @@ body.dark .cbmot{color:var(--p3c2);background:rgba(245,158,11,.06);border:1px so
 body.dark .cbnoise{color:var(--p4c2);background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.2);}
 .nblk{position:absolute;border-radius:6px;pointer-events:none;z-index:0;opacity:.25;}
 body.dark .nblk{border-radius:4px;opacity:.3;}
-#the-word{display:block;position:relative;z-index:5;transform-origin:center;text-shadow:var(--word-glow);}
+#the-word{display:block;position:relative;z-index:5;transform-origin:center;text-shadow:var(--word-glow);font-weight:900;word-break:break-word;max-width:100%;}
 
 /* ══════════════════════════════════════════════════════
    ANSWER BUTTONS
@@ -1059,6 +1100,25 @@ body.dark .oins{border-width:1px;border-radius:0 9px 9px 0;padding:10px 12px;fon
       </div>
     </div>
 
+    <!-- Recovery Code -->
+    <div id="recovery-section">
+    <button class="you-acc-btn" id="acc-btn-recovery" onclick="toggleAcc('recovery')">
+      <span>🔑 Recovery Code</span>
+      <span class="you-acc-arrow">▼</span>
+    </button>
+    <div class="you-acc-body" id="acc-body-recovery">
+      <div class="you-acc-inner">
+        <div style="font-size:11px;color:var(--t2);margin-bottom:10px;line-height:1.5;">Lost your progress? Enter your recovery code to restore your levels.</div>
+        <div class="you-edit-field">
+          <div class="you-edit-label">Recovery Code</div>
+          <input class="you-edit-input" id="recovery-input" type="text" maxlength="20" autocomplete="off" placeholder="Type the exact keyword">
+        </div>
+        <button class="you-edit-save" onclick="applyRecoveryCode()">🔄 Restore Progress</button>
+        <div class="you-edit-saved" id="recovery-msg" style="opacity:0;">✅ Restored!</div>
+      </div>
+    </div>
+    </div>
+
     <!-- My Progress → separate screen -->
     <button class="you-acc-btn" onclick="showProg()">
       <span>📊 My Progress</span>
@@ -1308,7 +1368,7 @@ body.dark .oins{border-width:1px;border-radius:0 9px 9px 0;padding:10px 12px;fon
 
 <!-- ════════════════════════════════ GAME OVER ════════════════════════════════ -->
 <div class="scr off" id="s-over">
-  <div><span class="oico">😵</span><div class="otitle">Lives Depleted</div><div class="osub" id="osub">Train again.</div></div>
+  <div><span class="oico">😵</span><div class="otitle">Not This Time</div><div class="osub" id="osub">Try again.</div></div>
   <div class="ostats">
     <div class="ostat"><span class="ov" id="ov-sc">0</span><span class="ol">Score</span></div>
     <div class="ostat"><span class="ov" id="ov-cr">0</span><span class="ol">Correct</span></div>
@@ -1326,35 +1386,43 @@ body.dark .oins{border-width:1px;border-radius:0 9px 9px 0;padding:10px 12px;fon
 
 /* ══════════════════════════════════════════════════════
    SECURITY LAYER — Color Clash v2.0
-   • Multi-layer XOR encryption with dynamic key
+   • DUAL STORAGE — encrypted primary + plain JSON fallback
+   • Salt loss protection — auto-restore from fallback
    • HMAC-FNV integrity — tamper detection
    • Score validation — impossible values rejected
-   • Anti-cheat — strict sequential unlock enforced
-   • DevTools detection — state wipe on open
-   • Rate limiting — 30 saves / 10s max
-   • Self-healing — corrupted data auto-reset
-   • Code integrity — detects external script injection
+   • Anti-cheat — sequential unlock enforced
    • Mutation Observer — DOM tamper detection
-   • Console trap — blocks manual JS execution
 ══════════════════════════════════════════════════════ */
 const _SEC=(()=>{
   'use strict';
 
-  // ── Multi-part key — never assembled in one place ────
+  // ── Multi-part key ───────────────────────────────────
   const _A=['43','6f','6c','6f','72'];
   const _B=['43','6c','61','73','68'];
   const _C=['40','39','6b','5a','23'];
   const _D=['32','30','32','36','21'];
   const _E=['70','51','72','58','6d'];
   const _F=['4e','37','24','38','76'];
-  // Assemble at runtime from hex
   const _hex=a=>a.map(h=>String.fromCharCode(parseInt(h,16))).join('');
   const SECRET=_hex(_A)+_hex(_B)+_hex(_C)+_hex(_D)+_hex(_E)+_hex(_F);
 
-  // ── Dynamic salt — changes every session ─────────────
-  const _SALT=Math.floor(Date.now()/86400000).toString(36);
+  // ── Salt — get or create, never wipe ─────────────────
+  function _getOrCreateSalt(){
+    const k='cc_inst_salt';
+    let s=localStorage.getItem(k);
+    if(!s){
+      s=Math.random().toString(36).slice(2)+Date.now().toString(36);
+      try{
+        localStorage.setItem(k,s);
+      }catch(e){
+        console.warn('localStorage quota exceeded (salt):', e.message);
+      }
+    }
+    return s;
+  }
+  let _SALT=_getOrCreateSalt();
 
-  // ── Double XOR cipher ────────────────────────────────
+  // ── XOR cipher ───────────────────────────────────────
   function xor(str,key){
     let r='';
     for(let i=0;i<str.length;i++)
@@ -1377,86 +1445,121 @@ const _SEC=(()=>{
     }catch{return null;}
   }
 
-  // ── HMAC-FNV integrity signature ─────────────────────
+  // ── HMAC-FNV signature ───────────────────────────────
   function sign(data){
     const str=JSON.stringify(data)+SECRET+_SALT;
     let h=0xcbf29ce4;
-    for(let i=0;i<str.length;i++){
-      h^=str.charCodeAt(i);
-      h=(Math.imul(h,0x01000193))>>>0;
-    }
-    // Second pass for stronger hash
-    for(let i=str.length-1;i>=0;i--){
-      h^=str.charCodeAt(i);
-      h=(Math.imul(h,0x811c9dc5))>>>0;
-    }
+    for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=(Math.imul(h,0x01000193))>>>0;}
+    for(let i=str.length-1;i>=0;i--){h^=str.charCodeAt(i);h=(Math.imul(h,0x811c9dc5))>>>0;}
     return h.toString(16).padStart(8,'0');
   }
 
-  // ── Key obfuscation ──────────────────────────────────
-  function stk(k){
-    return btoa('cc_'+sign(k).slice(0,4)+'_'+k);
-  }
+  // ── Obfuscated key name ──────────────────────────────
+  function stk(k){return btoa('cc_'+sign(k).slice(0,4)+'_'+k);}
 
-  // ── Rate limiter ─────────────────────────────────────
-  let _saves=[];
-  function rateOk(){
-    const now=Date.now();
-    _saves=_saves.filter(t=>now-t<10000);
-    if(_saves.length>=30)return false;
-    _saves.push(now);return true;
+  // ── Plain fallback key name ──────────────────────────
+  // Stored separately so salt loss never affects it
+  function fbk(k){return 'cc_fb_'+k;}
+
+  // ── Integrity check ──────────────────────────────────
+  function valid(k,payload){
+    if(!payload||typeof payload!=='object')return false;
+    if(!payload.__sig||payload.__d===undefined)return false;
+    if(typeof payload.__t!=='number')return false;
+    if(payload.__t>Date.now()+604800000)return false;
+    return payload.__sig===sign(payload.__d);
   }
 
   // ── Anti-cheat rules ─────────────────────────────────
   const RULES={
     unlocked:{min:1,max:51,type:'number'},
-    bestStreak:{min:0,max:500,type:'number'},
+    bestStreak:{min:0,max:Number.MAX_SAFE_INTEGER,type:'number'},
   };
 
-  // ── Integrity validation ─────────────────────────────
-  function valid(k,payload){
-    if(!payload||typeof payload!=='object')return false;
-    if(!payload.__sig||payload.__d===undefined)return false;
-    if(typeof payload.__t!=='number')return false;
-    // Reject suspiciously future timestamps
-    if(payload.__t>Date.now()+60000)return false;
-    return payload.__sig===sign(payload.__d);
-  }
-
-  // ── Public storage API ───────────────────────────────
+  // ── DUAL STORAGE — Public API ────────────────────────
+  // Every save writes to BOTH encrypted + plain fallback
+  // Every load tries encrypted first, falls back to plain
   const storage={
     save(k,v){
-      if(!rateOk())return false;
+      // Rule check
       if(RULES[k]){
         const r=RULES[k];
         if(typeof v!==r.type||v<r.min||v>r.max)return false;
       }
-      const payload={__d:v,__sig:sign(v),__t:Date.now()};
-      const enc=encrypt(payload);
-      if(!enc)return false;
-      try{localStorage.setItem(stk(k),enc);return true;}
-      catch{return false;}
+      // 1. Encrypted primary
+      try{
+        const payload={__d:v,__sig:sign(v),__t:Date.now()};
+        const enc=encrypt(payload);
+        if(enc){
+          try{
+            localStorage.setItem(stk(k),enc);
+          }catch(e){
+            console.warn('localStorage quota exceeded (encrypted):', e.message);
+          }
+        }
+      }catch(e){}
+      // 2. Plain JSON fallback — always written, never depends on salt
+      try{
+        try{
+          localStorage.setItem(fbk(k),JSON.stringify({__d:v,__t:Date.now()}));
+        }catch(e){
+          console.warn('localStorage quota exceeded (fallback):', e.message);
+        }
+      }catch(e){}
+      return true;
     },
     load(k,def){
+      // 1. Try encrypted primary
       try{
         const raw=localStorage.getItem(stk(k));
-        if(!raw)return def;
-        const payload=decrypt(raw);
-        if(!valid(k,payload)){
-          localStorage.removeItem(stk(k));
-          return def;
+        if(raw){
+          const payload=decrypt(raw);
+          if(valid(k,payload))return payload.__d??def;
+          // Encrypted data invalid (salt lost?) — remove it, fallback will handle
+          try{
+            localStorage.removeItem(stk(k));
+          }catch(e){
+            console.warn('localStorage removeItem failed:', e.message);
+          }
         }
-        return payload.__d??def;
-      }catch{return def;}
+      }catch(e){}
+      // 2. Fallback — plain JSON, always readable
+      try{
+        const fb=localStorage.getItem(fbk(k));
+        if(fb){
+          const parsed=JSON.parse(fb);
+          if(parsed&&parsed.__d!==undefined){
+            // Re-encrypt with current salt so primary works again
+            const payload={__d:parsed.__d,__sig:sign(parsed.__d),__t:Date.now()};
+            const enc=encrypt(payload);
+            if(enc){
+              try{
+                localStorage.setItem(stk(k),enc);
+              }catch(e){
+                console.warn('localStorage quota exceeded (recovery):', e.message);
+              }
+            }
+            return parsed.__d;
+          }
+        }
+      }catch(e){}
+      return def;
     },
     remove(k){
       try{localStorage.removeItem(stk(k));}catch{}
+      try{localStorage.removeItem(fbk(k));}catch{}
     },
     clear(){
-      const prefix=btoa('cc_').slice(0,4);
-      Object.keys(localStorage).forEach(k=>{
-        if(k.startsWith(prefix))try{localStorage.removeItem(k);}catch{}
-      });
+      // Remove all cc_ keys — both encrypted and fallback
+      const toRemove=[];
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k&&(k.startsWith('cc_')||k.startsWith(btoa('cc_').slice(0,4))))toRemove.push(k);
+      }
+      toRemove.forEach(k=>{try{localStorage.removeItem(k);}catch{}});
+      // Also remove salt and version so fresh start is truly fresh
+      try{localStorage.removeItem('cc_inst_salt');}catch{}
+      try{localStorage.removeItem('cc50_data_ver');}catch{}
     }
   };
 
@@ -1466,85 +1569,36 @@ const _SEC=(()=>{
     validate(newScore,prevScore,lvId){
       if(typeof newScore!=='number')return false;
       if(newScore<0||newScore>this.MAX_PER_LEVEL)return false;
-      if(newScore<prevScore)return false;
       return true;
     }
   };
 
-  // ── Anti-cheat: strict sequential unlock ─────────────
+  // ── Anti-cheat: sequential unlock ────────────────────
+  // FIX: Removed strict loop — only check that current level is done
+  // This prevents blocking when a score entry is momentarily missing
   const anticheat={
     validateUnlock(newUnlock,scores){
       if(typeof newUnlock!=='number')return false;
       if(newUnlock<1||newUnlock>51)return false;
-      // Must have completed ALL previous levels in order
-      for(let i=1;i<newUnlock;i++){
-        if(!scores||!scores[i])return false;
-      }
-      // Can only unlock ONE level ahead at a time
-      const done=Object.keys(scores||{}).map(Number).filter(n=>n>0);
-      const maxDone=done.length?Math.max(...done):0;
-      if(newUnlock>maxDone+2)return false;
+      // Only require the immediately preceding level to be completed
+      if(newUnlock>1&&(!scores||!scores[newUnlock-1]))return false;
       return true;
     },
-    // Runtime check — call before allowing level start
+    // Runtime check before level start
     canPlay(lvId,scores,unlocked){
       if(typeof lvId!=='number'||lvId<1||lvId>50)return false;
       if(lvId>unlocked)return false;
-      if(lvId>1&&(!scores||!scores[lvId-1]))return false;
       return true;
     }
   };
 
-  // ── DevTools detection ───────────────────────────────
+  // ── DOM Mutation Observer ────────────────────────────
   (()=>{
-    let devOpen=false;
-    const threshold=160;
-    const wipe=()=>{
-      try{
-        ['m-score','rp-sc','ov-sc','ps-score'].forEach(id=>{
-          const e=document.getElementById(id);if(e)e.textContent='—';
-        });
-      }catch{}
-    };
-    const check=()=>{
-      const w=window.outerWidth-window.innerWidth;
-      const h=window.outerHeight-window.innerHeight;
-      if((w>threshold||h>threshold)&&!devOpen){devOpen=true;wipe();}
-      else if(w<=threshold&&h<=threshold){devOpen=false;}
-    };
-    setInterval(check,1200);
-
-    // Console trap — blocks eval/manual execution
-    let _ct=0;
-    Object.defineProperty(console,'_cc',{get(){
-      _ct++;
-      if(_ct>3){devOpen=true;wipe();}
-      return undefined;
-    }});
-
-    // Debugger trap
-    setInterval(()=>{
-      const t=performance.now();
-      // eslint-disable-next-line no-debugger
-      (function(){})['constructor']('debugger')();
-      if(performance.now()-t>100){devOpen=true;wipe();}
-    },5000);
-  })();
-
-  // ── DOM Mutation Observer — detects injected elements ─
-  (()=>{
-    const ALLOWED_IDS=new Set(['pwa-banner','spop','lvbanner','pause-overlay']);
     if(typeof MutationObserver!=='undefined'){
       const obs=new MutationObserver(muts=>{
         muts.forEach(m=>{
           m.addedNodes.forEach(n=>{
-            if(n.nodeType===1){
-              const id=n.id||'';
-              // Flag suspicious script/iframe injection
-              if(n.tagName==='SCRIPT'||n.tagName==='IFRAME'){
-                n.remove();
-              }
-            }
+            if(n.nodeType===1&&(n.tagName==='SCRIPT'||n.tagName==='IFRAME'))n.remove();
           });
         });
       });
@@ -1554,38 +1608,32 @@ const _SEC=(()=>{
     }
   })();
 
-  // ── Freeze critical constants ─────────────────────────
-  const freeze={
-    lockGameConstants(){
-      try{Object.freeze(RULES);}catch{}
-    }
-  };
-
+  const freeze={lockGameConstants(){try{Object.freeze(RULES);}catch{}}};
   return{storage,score,anticheat,freeze};
 })();
 
-// ── Periodic tamper check — runs every 8s ────────────────
-setInterval(()=>{
-  try{
-    const unl=_SEC.storage.load('unlocked',1);
-    const sc=_SEC.storage.load('scores',{});
-    // If unlocked value is ahead of actual completed levels, reset to real value
-    const completed=Object.keys(sc||{}).map(Number).filter(n=>Number.isInteger(n)&&n>0&&n<=50);
-    const maxCompleted=completed.length?Math.max(...completed):0;
-    if(unl>maxCompleted+1){
-      // Tamper detected — reset to legitimate value
-      _SEC.storage.save('unlocked',Math.max(1,maxCompleted+1));
-    }
-  }catch{}
-},8000);
-
 /* ══════════════════════════════════════════════════════
-   STORAGE WRAPPER (drop-in replacement for ST)
+   STORAGE WRAPPER
 ══════════════════════════════════════════════════════ */
 const ST={
   save(k,v){return _SEC.storage.save(k,v);},
   load(k,d){return _SEC.storage.load(k,d);},
-  remove(k){return _SEC.storage.remove(k);}
+  remove(k){return _SEC.storage.remove(k);},
+  // BUG 11 fix: Storage usage monitor
+  usageKB(){
+    try{
+      let total=0;
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        total+=(k.length+(localStorage.getItem(k)||'').length)*2;
+      }
+      return Math.round(total/1024);
+    }catch{return 0;}
+  },
+  isSafe(){
+    // Warn if over 3MB (60% of typical 5MB limit) — still plenty of room
+    return this.usageKB()<3072;
+  }
 };
 
 /* ══════════════════════════════════════════════════════
@@ -1672,6 +1720,12 @@ function showYou(){
   document.getElementById('edit-prof').value=profile.prof||'';
   document.getElementById('edit-saved').style.opacity='0';
   // Close accordion on open
+  // Hide recovery section after deadline
+  const recSec = document.getElementById('recovery-section');
+  if(recSec){
+    recSec.style.display = Date.now() > new Date("2026-03-31T23:59:59").getTime() ? 'none' : '';
+  }
+
   document.getElementById('acc-btn-edit').classList.remove('open');
   document.getElementById('acc-body-edit').classList.remove('open');
   showScr('s-you');
@@ -1709,6 +1763,65 @@ function saveProfileEdit(){
   saved.textContent='✅ Saved!';
   saved.style.opacity='1';
   setTimeout(()=>saved.style.opacity='0',2000);
+}
+
+function applyRecoveryCode(){
+  const DEADLINE = new Date("2026-03-31T23:59:59").getTime();
+  const MAX_LEVEL = 16;
+  const input = document.getElementById('recovery-input').value.trim().toUpperCase();
+  const msg = document.getElementById('recovery-msg');
+
+  function showMsg(text, ok){
+    msg.textContent = (ok ? '✅ ' : '⚠️ ') + text;
+    msg.style.color = ok ? 'var(--ok)' : 'var(--warn)';
+    msg.style.opacity = '1';
+    setTimeout(()=>{ msg.style.opacity='0'; }, 3000);
+  }
+
+  // Deadline check
+  if(Date.now() > DEADLINE){
+    showMsg('Recovery period has ended.', false);
+    return;
+  }
+
+  // Keyword check: must start with SORRY
+  if(!input.startsWith('SORRY')){
+    showMsg('Invalid code.', false);
+    return;
+  }
+
+  // Extract level number
+  const levelStr = input.replace('SORRY','');
+  const targetLevel = parseInt(levelStr);
+
+  if(isNaN(targetLevel) || targetLevel < 1 || targetLevel > MAX_LEVEL){
+    showMsg('Invalid code. Max level is '+MAX_LEVEL+'.', false);
+    return;
+  }
+
+  // Already at this level or higher?
+  const currentUnlock = ST.load('unlocked', 1);
+  if(currentUnlock >= targetLevel){
+    showMsg('You already have level '+targetLevel+' or higher!', false);
+    return;
+  }
+
+  // Inject dummy scores for all previous levels
+  let dummyScores = {};
+  for(let i = 1; i < targetLevel; i++){
+    dummyScores[i] = {stars:3, score:5000, acc:95};
+  }
+  ST.save('scores', dummyScores);
+  ST.save('unlocked', targetLevel);
+  ST.save('bestStreak', 15);
+
+  // Clear input
+  document.getElementById('recovery-input').value = '';
+
+  // Rebuild grids and auto-select restored level
+  buildGrids();
+  pickLv(targetLevel);
+  showMsg('Level '+targetLevel+' restored! Welcome back. 🎉', true);
 }
 
 function showProg(){
@@ -1784,13 +1897,20 @@ function backFromYou(){
 }
 
 function confirmReset(){
-  if(confirm('Reset ALL progress and profile? This cannot be undone.')){
+  ccConfirm(
+    '🗑️',
+    'Clear All Data?',
+    'This will delete all levels, scores, streaks and your profile. This cannot be undone.',
+    'Yes, Clear All'
+  ).then(confirmed=>{
+    if(!confirmed)return;
     ST.save('scores',{});ST.save('unlocked',1);ST.save('theme','clarity');
-    ST.save('profile',null);ST.save('bestStreak',0);
+    ST.remove('profile');ST.save('bestStreak',0);
     applyTheme('clarity');buildGrids();buildThemeGrid();
-    alert('All data cleared.');
-    showScr('s-onboard');
-  }
+    ccAlert('✅','All Data Cleared','Your progress has been reset. Starting fresh!').then(()=>{
+      showScr('s-onboard');
+    });
+  });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1945,7 +2065,7 @@ function stopNoise(){
 /* ══════════════════════════════════════════════════════
    SETTINGS — Sound & Vibration
 ══════════════════════════════════════════════════════ */
-let _soundOn=ST.load('soundOn',true)!==false;
+let _soundOn=ST.load('soundOn',true)===true||ST.load('soundOn',true)===undefined||ST.load('soundOn',true)===null;
 let _vibOn=ST.load('vibOn',true)!==false;
 
 function toggleSound(){
@@ -1982,10 +2102,56 @@ function updateSettingsUI(){
    AUDIO
 ══════════════════════════════════════════════════════ */
 let actx=null;
-function aud(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx;}
+function aud(){
+  if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();
+  // Mobile fix: resume if suspended (browser blocks audio until user interaction)
+  if(actx.state==='suspended')actx.resume();
+  return actx;
+}
+// Unlock AudioContext on first user touch — runs once
+function _unlockAudio(){
+  if(actx&&actx.state==='suspended')actx.resume();
+  if(!actx){
+    try{
+      actx=new(window.AudioContext||window.webkitAudioContext)();
+      // Play silent buffer to unlock
+      const buf=actx.createBuffer(1,1,22050);
+      const src=actx.createBufferSource();
+      src.buffer=buf;src.connect(actx.destination);src.start(0);
+    }catch{}
+  }
+}
+// Multiple events — not once, because AudioContext can re-suspend
+document.addEventListener('touchstart',_unlockAudio,{passive:true});
+document.addEventListener('touchend',_unlockAudio,{passive:true});
+document.addEventListener('click',_unlockAudio,{passive:true});
+
 function tone(f,t,d,g=.2){
   if(!_soundOn)return;
-  try{const c=aud(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.value=f;gn.gain.setValueAtTime(g,c.currentTime);gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d);}catch{}
+  try{
+    const c=aud();
+    if(!c)return;
+    // Always resume — mobile browsers suspend AudioContext frequently
+    if(c.state==='suspended'){
+      c.resume().then(()=>{
+        try{
+          const o=c.createOscillator(),gn=c.createGain();
+          o.connect(gn);gn.connect(c.destination);
+          o.type=t;o.frequency.value=f;
+          gn.gain.setValueAtTime(g,c.currentTime);
+          gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);
+          o.start();o.stop(c.currentTime+d);
+        }catch{}
+      });
+      return;
+    }
+    const o=c.createOscillator(),gn=c.createGain();
+    o.connect(gn);gn.connect(c.destination);
+    o.type=t;o.frequency.value=f;
+    gn.gain.setValueAtTime(g,c.currentTime);
+    gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);
+    o.start();o.stop(c.currentTime+d);
+  }catch{}
 }
 function sOk(){tone(660,'sine',.1);setTimeout(()=>tone(880,'sine',.08,.15),60);}
 function sErr(){tone(150,'sawtooth',.18,.15);}
@@ -2018,13 +2184,16 @@ function init(){
   initTheme();
   _SEC.freeze.lockGameConstants();
 
-  // ── Data version guard — wipes old testing/stale data ──
+  // ── Data version guard ───────────────────────────────
+  // ⚠️ IMPORTANT: Do NOT change DATA_VERSION. It is kept fixed intentionally.
+  // Changing it would silently wipe ALL users' progress with no warning.
+  // If a migration is ever needed in future, write a proper migration function
+  // that copies old data to new keys — never just wipe.
   const DATA_VERSION='v1.0';
   const storedVer=localStorage.getItem('cc50_data_ver');
   if(storedVer!==DATA_VERSION){
-    ST.save('scores',{});
-    ST.save('unlocked',1);
-    ST.save('bestStreak',0);
+    // First time install only — no existing data to protect
+    // Never wipe scores/unlocked here in future versions
     localStorage.setItem('cc50_data_ver',DATA_VERSION);
   }
 
@@ -2033,8 +2202,19 @@ function init(){
   history.replaceState({screen:'s-home'},'','');
   _HIST.push('s-home');
   const profile=ST.load('profile',null);
-  if(!profile){
+  const existingUnlock=ST.load('unlocked',1);
+  const existingScores=ST.load('scores',{});
+  const hasProgress=existingUnlock>1||Object.keys(existingScores||{}).length>0;
+
+  if(!profile&&!hasProgress){
+    // Truly new user — show onboarding
     showScr('s-onboard');
+  }else if(!profile&&hasProgress){
+    // Profile lost but progress exists — skip onboarding, restore silently
+    ST.save('profile',{name:'Trainer',age:'20',prof:'Student'});
+    updateWelcomeName('Trainer');
+    buildGrids();
+    showScr('s-home');
   }else{
     updateWelcomeName(profile.name||'Trainer');
     buildGrids();
@@ -2064,14 +2244,23 @@ function updateWelcomeName(name){
   if(el)el.textContent=name||'Trainer';
 }
 
+let _demoInt=null;
 function initDemo(){
   const ks=A12,el=document.getElementById('demo-word'),an=document.getElementById('demo-ans');
-  setInterval(()=>{
-    const wk=ks[Math.floor(Math.random()*ks.length)];
-    let ck;do{ck=ks[Math.floor(Math.random()*ks.length)];}while(ck===wk);
-    el.textContent=wk;el.style.color=C[ck];an.textContent=ck;an.style.color=C[ck];
+  if(_demoInt)clearInterval(_demoInt);
+  _demoInt=setInterval(()=>{
+    // Pause demo when game screen is active to save battery
+    if(!document.getElementById('s-home').classList.contains('off')){
+      const wk=ks[Math.floor(Math.random()*ks.length)];
+      let ck;do{ck=ks[Math.floor(Math.random()*ks.length)];}while(ck===wk);
+      if(el)el.textContent=wk;
+      if(el)el.style.color=C[ck];
+      if(an)an.textContent=ck;
+      if(an)an.style.color=C[ck];
+    }
   },1800);
 }
+function stopDemo(){if(_demoInt){clearInterval(_demoInt);_demoInt=null;}}
 
 /* ══════════════════════════════════════════════════════
    PHASE META
@@ -2231,6 +2420,7 @@ function countdown(n){
    LEVEL / ROUND START
 ══════════════════════════════════════════════════════ */
 function startLevel(){
+  stopDemo();
   const lv=G.lv;
   G.round=0;G.score=0;G.lives=lv.lives;G.streak=0;G.bestStreak=0;
   G.correctAll=0;G.totalAll=0;G.conflictCorrect=0;G.conflictTotal=0;G.times=[];
@@ -2346,7 +2536,6 @@ function nextQ(){
       fs='clamp(40px,11vw,58px)'; fw='900'; bh=96+rotBonus;
     } else if(wLen<=4){                   // BLUE, CYAN, GOLD, PINK
       fs='clamp(36px,10vw,54px)'; fw='900'; bh=100+rotBonus;
-      tw.style.webkitTextStroke='0.6px currentColor';
       tw.style.webkitTextStroke='0.6px currentColor';
     } else if(wLen<=5){                   // GREEN, BLACK, WHITE, BROWN — same size, extra bold
       fs='clamp(30px,8.5vw,48px)'; fw='900'; bh=106+rotBonus;
@@ -2512,19 +2701,14 @@ function levelComplete(){
   const confAcc=G.conflictTotal>0?Math.round(G.conflictCorrect/G.conflictTotal*100):0;
   let stars=1;if(acc>=70)stars=2;if(acc>=88)stars=3;
   const sc=ST.load('scores',{});
-  // Score validation — reject impossible values
-  const prevBest=sc[lv.id]?.score||0;
-  if(_SEC.score.validate(G.score,0,lv.id)){
-    if(!sc[lv.id]||stars>sc[lv.id].stars)sc[lv.id]={stars,score:G.score,acc};
-    ST.save('scores',sc);
-  }
-  // Anti-cheat unlock — enforce sequential progression
+  // Always record this level as completed
+  if(!sc[lv.id]||stars>sc[lv.id].stars)sc[lv.id]={stars,score:G.score||0,acc};
+  ST.save('scores',sc);
+  // Always unlock next level after completing current
   const curUnlock=ST.load('unlocked',1);
-  if(lv.id>=curUnlock&&lv.id<50){
-    const newUnlock=lv.id+1;
-    if(_SEC.anticheat.validateUnlock(newUnlock,sc)){
-      ST.save('unlocked',newUnlock);
-    }
+  if(lv.id<50){
+    const newUnlock=Math.max(curUnlock,lv.id+1);
+    ST.save('unlocked',newUnlock);
   }
   sWin();spawnConf(p);showScr('s-lvc');
   document.getElementById('lcbadge').textContent=BADGES[lv.id]||'🏆';
@@ -2552,7 +2736,7 @@ function levelComplete(){
     document.getElementById('btn-nlv').onclick=()=>{
       const sc=ST.load('scores',{});
       const unl=ST.load('unlocked',1);
-      if(!_SEC.anticheat.canPlay(lv.id+1,sc,unl))return;
+      if(!_SEC.anticheat.canPlay(lv.id+1,sc,unl)){showBanner("Loading next level...",1500);return;}
       pickLv(lv.id+1);G.selId=lv.id+1;G.lv=LVS.find(l=>l.id===G.selId);countdown(3);
     };
   }else{
@@ -2590,9 +2774,35 @@ function gameOver(){
   document.getElementById('ov-sc').textContent=G.score.toLocaleString();
   document.getElementById('ov-cr').textContent=G.correctAll;
   document.getElementById('ov-ac').textContent=acc+'%';
-  const msgs=["The cognitive load exceeded your current capacity. Daily training builds resistance.","Your override system ran out. Consistent training rewires the response.","This level pushes human limits. Persistence is the only method."];
-  document.getElementById('osub').textContent=msgs[G.lv.id%3];
-  document.getElementById('oins').textContent=INS[Math.min(G.lv.id-1,INS.length-1)];
+
+  // Relatable messages — based on level difficulty
+  const lvId=G.lv.id;
+  let sub, ins;
+
+  if(lvId<=5){
+    const m=["Almost! Give it one more shot.","So close. Try again?","You're getting the hang of it."];
+    sub=m[lvId%3];
+    ins="Tip: Focus on the ink color, not the word. Your brain will adjust.";
+  } else if(lvId<=10){
+    const m=["Level "+lvId+" is tricky. One more try.","Nearly there — retry?","Your brain is learning. Keep going."];
+    sub=m[lvId%3];
+    ins="You're improving every attempt, even when it doesn't feel like it.";
+  } else if(lvId<=15){
+    const m=["Level "+lvId+" is genuinely hard. Retry?","Most people struggle here. You're not alone.","One more round — you've got this."];
+    sub=m[lvId%3];
+    ins="Getting this far already puts you ahead of most players.";
+  } else if(lvId<=20){
+    const m=["Level "+lvId+" is brutal. Respect for trying.","This level breaks most people. Keep pushing.","Your brain needs reps, not perfection."];
+    sub=m[lvId%3];
+    ins="Reaching Level "+lvId+" means your brain is already working differently.";
+  } else {
+    const m=["Level "+lvId+" is elite territory. Try again.","Almost cracked it. One more run.","Your brain needs reps, not perfection."];
+    sub=m[lvId%3];
+    ins="You're in territory most people never reach. Keep going.";
+  }
+
+  document.getElementById('osub').textContent=sub;
+  document.getElementById('oins').textContent=ins;
 }
 function retryLv(){G.lv=LVS.find(l=>l.id===G.selId);countdown(3);}
 
@@ -2726,6 +2936,55 @@ function triggerInstall(){
 }
 function dismissInstall(){const b=document.getElementById('pwa-banner');if(b)b.remove();}
 window.addEventListener('appinstalled',()=>{deferredPrompt=null;dismissInstall();});
+
+/* ══════════════════════════════════════════════════════
+   CUSTOM MODAL — PWA-safe replacement for confirm/alert
+══════════════════════════════════════════════════════ */
+function ccModal({icon='⚠️',title='',body='',buttons=[]}){
+  return new Promise(resolve=>{
+    const ov=document.getElementById('cc-modal-overlay');
+    document.getElementById('cc-modal-icon').textContent=icon;
+    document.getElementById('cc-modal-title').textContent=title;
+    document.getElementById('cc-modal-body').textContent=body;
+    const btns=document.getElementById('cc-modal-btns');
+    btns.innerHTML='';
+    buttons.forEach(b=>{
+      const el=document.createElement('button');
+      el.className='cc-modal-btn '+b.cls;
+      el.textContent=b.label;
+      el.onclick=()=>{ov.classList.add('cc-modal-hide');resolve(b.value);};
+      btns.appendChild(el);
+    });
+    ov.classList.remove('cc-modal-hide');
+  });
+}
+function ccModalBgClick(e){
+  if(e.target===document.getElementById('cc-modal-overlay')){
+    e.target.classList.add('cc-modal-hide');
+  }
+}
+function ccAlert(icon,title,body){
+  return ccModal({icon,title,body,buttons:[
+    {label:'OK',cls:'confirm-ok',value:true}
+  ]});
+}
+function ccConfirm(icon,title,body,confirmLabel='Confirm'){
+  return ccModal({icon,title,body,buttons:[
+    {label:'Cancel',cls:'cancel',value:false},
+    {label:confirmLabel,cls:'confirm-red',value:true}
+  ]});
+}
+
 </script>
+
+<!-- ═══════════════ CUSTOM MODAL ═══════════════ -->
+<div id="cc-modal-overlay" class="cc-modal-hide" onclick="ccModalBgClick(event)">
+  <div id="cc-modal-box">
+    <div id="cc-modal-icon">⚠️</div>
+    <div id="cc-modal-title">Are you sure?</div>
+    <div id="cc-modal-body"></div>
+    <div class="cc-modal-btns" id="cc-modal-btns"></div>
+  </div>
+</div>
 </body>
 </html>

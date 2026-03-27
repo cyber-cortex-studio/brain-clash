@@ -1,12 +1,14 @@
 {
   "name": "Color Clash — Train Your Brain",
   "short_name": "Color Clash",
-  "description": "A fun brain-training color word game",
+  "description": "A cognitive training game based on the Stroop Effect. Train your brain to ignore distractions.",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0e17",
   "theme_color": "#0a0e17",
+  "lang": "en",
+  "scope": "./",
   "icons": [
     {
       "src": "icon-192.png",
@@ -20,5 +22,6 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["games", "health", "education"]
 }

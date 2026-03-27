@@ -1,60 +1,49 @@
-/* ══════════════════════════════════════════════════
-   Color Clash — Service Worker (sw.js)
-   Offline-first caching strategy
-══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   Color Clash — Service Worker v1
+   Cache-first: works 100% offline after first load
+═══════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'color-clash-v3';
-
-const ASSETS_TO_CACHE = [
+const CACHE = 'color-clash-v1';
+const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png',
-  'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap'
+  './icon-512.png'
 ];
 
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(function() {
-      return self.skipWaiting();
-    })
+/* Install — cache everything */
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(ASSETS))
   );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames
-          .filter(function(name) { return name !== CACHE_NAME; })
-          .map(function(name) { return caches.delete(name); })
-      );
-    }).then(function() {
-      return self.clients.claim();
-    })
+/* Activate — delete old caches */
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
   );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', function(event) {
-  if (event.request.method !== 'GET') return;
-  if (event.request.url.startsWith('chrome-extension')) return;
-
-  event.respondWith(
-    caches.match(event.request).then(function(cachedResponse) {
-      if (cachedResponse) return cachedResponse;
-      return fetch(event.request).then(function(networkResponse) {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type !== 'opaque') {
-          var responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(function(cache) {
-            cache.put(event.request, responseToCache);
-          });
+/* Fetch — cache first, then network */
+self.addEventListener('fetch', e => {
+  if (!e.request.url.startsWith(self.location.origin)) return;
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(res => {
+        if (res && res.status === 200 && res.type === 'basic') {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
         }
-        return networkResponse;
-      }).catch(function() {
-        return caches.match('./index.html');
+        return res;
+      }).catch(() => {
+        if (e.request.mode === 'navigate') return caches.match('./index.html');
       });
     })
   );
